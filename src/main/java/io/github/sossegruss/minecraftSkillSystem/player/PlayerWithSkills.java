@@ -24,7 +24,7 @@ import static java.lang.Character.getType;
  */
 public class PlayerWithSkills {
     private final UUID uuid;
-    private final Map<SkillType, Integer> skills = new HashMap<>(); //HashMap in order to save the players Skill XP while the server is running
+    private final Map<SkillType, Double> skills = new HashMap<>(); //HashMap in order to save the players Skill XP while the server is running
 
     private final Path folder = Path.of("src/main/resources/playerdata"); //The Path to the folder where all the players data is stored permanently in a json file
     private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -40,7 +40,7 @@ public class PlayerWithSkills {
      * @param addXP the amont of XP added to the total
      * @param skillType wich skills XP gets increased
      */
-    public void addSkillXP(SkillType skillType, int addXP){
+    public void addSkillXP(SkillType skillType, double addXP){
         this.skills.put(skillType, this.skills.get(skillType) + addXP);
     }
 
@@ -50,8 +50,8 @@ public class PlayerWithSkills {
      * @param skillType which skills XP gets returned
      * @return return the amount of XP for a certain skill
      */
-    public int getXPfromSkill(SkillType skillType){
-        if(this.skills.get(skillType) == null) return 0;
+    public double getXPfromSkill(SkillType skillType){
+        if(this.skills.get(skillType) == null) return 0.0;
 
         return this.skills.get(skillType);
     }
@@ -79,14 +79,10 @@ public class PlayerWithSkills {
 
             Type type = new TypeToken<HashMap<SkillType, Integer>>(){}.getType();
 
-            Map<SkillType, Integer> readMap = new HashMap<>();
+            Map<SkillType, Double> readMap = new HashMap<>();
             readMap = gson.fromJson(json, type);
 
-            //though about assigning the map of readMap directly to skills
-            skills.put(SkillType.MINING, readMap.get(SkillType.MINING));
-            skills.put(SkillType.FARMING, readMap.get(SkillType.FARMING));
-            skills.put(SkillType.FISHING, readMap.get(SkillType.FISHING));
-            skills.put(SkillType.COMBAT, readMap.get(SkillType.COMBAT));
+            skills.putAll(readMap);
 
         } catch (IOException e){
             e.printStackTrace();

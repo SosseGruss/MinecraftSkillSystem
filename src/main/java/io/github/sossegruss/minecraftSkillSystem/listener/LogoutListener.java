@@ -8,17 +8,11 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.UUID;
 
-public class logoutListener implements Listener {
+public class LogoutListener implements Listener {
     @EventHandler
     public void onLogout(PlayerQuitEvent event){
         UUID uuid = event.getPlayer().getUniqueId();
-
         PlayerWithSkills player = PlayerManager.getPlayer(uuid);
-        try{
-            player.writeToFile();
-        } catch (Exception e){
-            e.printStackTrace();
-        }
 
         PlayerManager.unloadPlayer(uuid);
 

@@ -9,12 +9,11 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import java.util.UUID;
 
 
-public class loginListener implements Listener {
+public class LoginListener implements Listener {
     @EventHandler
     public void onLogin(PlayerJoinEvent event){
         UUID uuid = event.getPlayer().getUniqueId();
 
         PlayerManager.loadPlayer(uuid);
-        PlayerManager.loadSkillsFromFile(uuid);
     }
 }

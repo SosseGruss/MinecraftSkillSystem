@@ -1,5 +1,7 @@
 package io.github.sossegruss.minecraftSkillSystem.player;
 
+import io.github.sossegruss.minecraftSkillSystem.MinecraftSkillSystem;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,12 +20,19 @@ public class PlayerManager {
         }
 
         PlayerWithSkills player = new PlayerWithSkills(uuid);
+        loadSkillsFromFile(uuid);
         PLAYERS.put(uuid, player);
     }
 
     public static void unloadPlayer(UUID uuid){
         if(!PLAYERS.containsKey(uuid)){
-            throw new IllegalArgumentException("Player already loaded");
+            throw new IllegalArgumentException("Player doesn't exist");
+        }
+
+        try{
+            PLAYERS.get(uuid).writeToFile();
+        } catch (Exception e){
+            MinecraftSkillSystem.getInstanz().getSLF4JLogger().error("could not save player to the file.", e);
         }
 
         PLAYERS.remove(uuid);
@@ -35,7 +44,7 @@ public class PlayerManager {
         try{
             player.loadFromFile();
         }catch (IOException e){
-            e.printStackTrace();
+            MinecraftSkillSystem.getInstanz().getSLF4JLogger().error("could not load player from the file.", e);
         }
     }
 }
