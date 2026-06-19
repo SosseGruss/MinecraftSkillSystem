@@ -14,8 +14,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import static java.lang.Character.getType;
-
 /**
  * The class represents a player with an UUID and also conntains their Skill XP
  *
@@ -37,10 +35,10 @@ public class PlayerWithSkills {
     /**
      * adds certain amount of XP to the total of a player Skill XP for a certain skill
      *
-     * @param addXP the amont of XP added to the total
+     * @param addXP     the amont of XP added to the total
      * @param skillType wich skills XP gets increased
      */
-    public void addSkillXP(SkillType skillType, double addXP){
+    public void addSkillXP(SkillType skillType, double addXP) {
         this.skills.put(skillType, this.skills.get(skillType) + addXP);
     }
 
@@ -50,8 +48,8 @@ public class PlayerWithSkills {
      * @param skillType which skills XP gets returned
      * @return return the amount of XP for a certain skill
      */
-    public double getXPfromSkill(SkillType skillType){
-        if(this.skills.get(skillType) == null) return 0.0;
+    public double getXPfromSkill(SkillType skillType) {
+        if (this.skills.get(skillType) == null) return 0.0;
 
         return this.skills.get(skillType);
     }
@@ -60,31 +58,32 @@ public class PlayerWithSkills {
         return uuid;
     }
 
-    public void writeToFile() throws IOException {
+    public void writeToFile() {
         try {
             Path file = folder.resolve(uuid + ".json");
             Files.writeString(file, gson.toJson(skills));
-        }catch (IOException e){
-            e.printStackTrace();;
+        } catch (IOException e) {
+            MinecraftSkillSystem.getInstanz().getSLF4JLogger().error("could not write to file");
         }
 
         MinecraftSkillSystem instanz = MinecraftSkillSystem.getInstanz();
     }
 
-    public void loadFromFile() throws IOException{
+    public void loadFromFile() throws IOException {
         Path file = folder.resolve(uuid + ".json");
 
         try {
             String json = Files.readString(file);
 
-            Type type = new TypeToken<HashMap<SkillType, Integer>>(){}.getType();
+            Type type = new TypeToken<HashMap<SkillType, Integer>>() {
+            }.getType();
 
             Map<SkillType, Double> readMap = new HashMap<>();
             readMap = gson.fromJson(json, type);
 
             skills.putAll(readMap);
 
-        } catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

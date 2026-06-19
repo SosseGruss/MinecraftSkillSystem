@@ -1,5 +1,6 @@
 package io.github.sossegruss.minecraftSkillSystem.listener;
 
+import io.github.sossegruss.minecraftSkillSystem.manager.ResourceXPmanager;
 import io.github.sossegruss.minecraftSkillSystem.player.PlayerManager;
 import io.github.sossegruss.minecraftSkillSystem.player.PlayerWithSkills;
 import io.github.sossegruss.minecraftSkillSystem.skill.SkillType;
@@ -8,10 +9,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerHarvestBlockEvent;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.Properties;
+import java.util.Map;
 import java.util.UUID;
 
 public class CropHarvestListener implements Listener {
@@ -22,21 +20,10 @@ public class CropHarvestListener implements Listener {
 
         Block block = event.getHarvestedBlock();
         String blockType = block.getType().name().toLowerCase();
+        Map<String, Double> resourceToXP = ResourceXPmanager.getFarmingxpharest();
 
-        Properties harvestableBlocks = new Properties();
-
-        try{
-            FileInputStream input = new FileInputStream("src/main/resources/skillValidBlocks/farmingXPinteractive/cropsGrantXPonHarvest.properties");
-            harvestableBlocks.load(input);
-
-            if(harvestableBlocks.containsKey(blockType)){
-                player.addSkillXP(SkillType.FARMING, Double.parseDouble(harvestableBlocks.getProperty(blockType)));
-            }
-
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        if(resourceToXP.containsKey(blockType)){
+            player.addSkillXP(SkillType.FARMING, resourceToXP.get(blockType));
         }
     }
 }
