@@ -23,8 +23,14 @@ import java.util.UUID;
 public class PlayerWithSkills {
     private final UUID uuid;
     private final Map<SkillType, Double> skills = new HashMap<>(); //HashMap in order to save the players Skill XP while the server is running
+    private final Map<SkillType, Integer> skillLevel = new HashMap<>();
+    private static final long[] LEVEL_THRASHHOLD = {0, 500, 1200, 2180, 3550, 5470, 8160, 11920, 17190, 24560,
+                                                    34880, 49330, 69560, 97880, 137530, 193040, 270750, 379550, 531870, 745120, 1050000, 1500000, 2100000, 3000000,
+                                                    Long.MAX_VALUE};
 
-    private final Path folder = Path.of("src/main/resources/playerdata"); //The Path to the folder where all the players data is stored permanently in a json file
+    private final Path xpFolder = Path.of("src/main/resources/playerdata/XP");
+    private final Path lvlFolder = Path.of("src/main/resources/playerdata/LVL");
+
     private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
 
@@ -39,7 +45,20 @@ public class PlayerWithSkills {
      * @param skillType wich skills XP gets increased
      */
     public void addSkillXP(SkillType skillType, double addXP) {
-        this.skills.put(skillType, this.skills.get(skillType) + addXP);
+        double currentXP = this.skills.get(skillType) + addXP;
+        int level = 1;
+
+        for(int i = 1; i < LEVEL_THRASHHOLD.length; i++){
+            if(currentXP >= LEVEL_THRASHHOLD[i]){
+                level = i + 1;
+            }
+            else{
+                break;
+            }
+        }
+        skillLevel.put(skillType, level);
+
+
     }
 
     /**
@@ -58,9 +77,9 @@ public class PlayerWithSkills {
         return uuid;
     }
 
-    public void writeToFile() {
+    public void writeXPToFile() {
         try {
-            Path file = folder.resolve(uuid + ".json");
+            Path file = xpFolder.resolve(uuid + ".json");
             Files.writeString(file, gson.toJson(skills));
         } catch (IOException e) {
             MinecraftSkillSystem.getInstanz().getSLF4JLogger().error("could not write to file");
@@ -69,8 +88,17 @@ public class PlayerWithSkills {
         MinecraftSkillSystem instanz = MinecraftSkillSystem.getInstanz();
     }
 
-    public void loadFromFile() throws IOException {
-        Path file = folder.resolve(uuid + ".json");
+    public void writeLvlToFile(){
+        try {
+            Path file = lvlFolder.resolve(uuid + ".json");
+            Files.writeString(file, gson.toJson(skillLevel));
+        } catch (IOException e) {
+            MinecraftSkillSystem.getInstanz().getSLF4JLogger().error("could not write to file");
+        }
+    }
+
+    public void loadXPFromFile() throws IOException {
+        Path file = xpFolder.resolve(uuid + ".json");
 
         try {
             String json = Files.readString(file);
@@ -87,4 +115,24 @@ public class PlayerWithSkills {
             e.printStackTrace();
         }
     }
+
+    public void loadLvlFromFile() throws IOException {
+        Path file = lvlFolder.resolve(uuid + ".json");
+
+        try {
+            String json = Files.readString(file);
+
+            Type type = new TypeToken<HashMap<SkillType, Integer>>() {
+            }.getType();
+
+            Map<SkillType, Integer> readMap = new HashMap<>();
+            readMap = gson.fromJson(json, type);
+
+            skillLevel.putAll(readMap);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

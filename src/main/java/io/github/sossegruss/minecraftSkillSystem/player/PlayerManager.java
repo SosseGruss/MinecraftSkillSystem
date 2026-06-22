@@ -30,7 +30,8 @@ public class PlayerManager {
         }
 
         try{
-            PLAYERS.get(uuid).writeToFile();
+            PLAYERS.get(uuid).writeXPToFile();
+            PLAYERS.get(uuid).writeLvlToFile();
         } catch (Exception e){
             MinecraftSkillSystem.getInstanz().getSLF4JLogger().error("could not save player to the file.", e);
         }
@@ -42,7 +43,8 @@ public class PlayerManager {
         PlayerWithSkills player = PLAYERS.get(uuid);
 
         try{
-            player.loadFromFile();
+            player.loadXPFromFile();
+            player.loadLvlFromFile();
         }catch (IOException e){
             MinecraftSkillSystem.getInstanz().getSLF4JLogger().error("could not load player from the file.", e);
         }
