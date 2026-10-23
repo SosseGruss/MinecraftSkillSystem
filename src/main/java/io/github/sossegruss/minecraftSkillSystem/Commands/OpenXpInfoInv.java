@@ -1,6 +1,7 @@
 package io.github.sossegruss.minecraftSkillSystem.Commands;
 
 import io.github.sossegruss.minecraftSkillSystem.inventories.XPInfoInventory;
+import io.github.sossegruss.minecraftSkillSystem.player.PlayerManager;
 import io.github.sossegruss.minecraftSkillSystem.player.PlayerWithSkills;
 import io.papermc.paper.command.brigadier.BasicCommand;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
@@ -10,6 +11,7 @@ import org.bukkit.entity.Player;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class OpenXpInfoInv implements BasicCommand {
 
@@ -20,9 +22,11 @@ public class OpenXpInfoInv implements BasicCommand {
         CommandSender sender = source.getSender();
         Entity entity = source.getExecutor();
 
-        if(entity instanceof PlayerWithSkills){
-            PlayerWithSkills player = (PlayerWithSkills) entity;
-            XPInfoInventory inv = data.computeIfAbsent(player, p -> new XPInfoInventory(player));
+        if(entity instanceof Player){
+            Player player = ((Player) entity).getPlayer();
+            UUID uuid = player.getUniqueId();
+            PlayerWithSkills playerWithSkills = PlayerManager.getPlayer(uuid);
+            XPInfoInventory inv = data.computeIfAbsent(player, p -> new XPInfoInventory(playerWithSkills));
             player.openInventory(inv.getInventory());
         }
         else {

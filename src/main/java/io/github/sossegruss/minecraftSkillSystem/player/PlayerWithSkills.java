@@ -21,7 +21,7 @@ import java.util.UUID;
  * @author phack
  * @version 16.06.2026
  */
-public class PlayerWithSkills implements Player {
+public class PlayerWithSkills {
     private final UUID uuid;
     private final Map<SkillType, Double> skillXP = new HashMap<>(); //HashMap in order to save the players Skill XP while the server is running
     private final Map<SkillType, Integer> skillLevel = new HashMap<>();
