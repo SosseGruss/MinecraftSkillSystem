@@ -20,8 +20,8 @@ public class CropHarvestListener implements Listener {
 
         Block block = event.getHarvestedBlock();
         String blockType = block.getType().name().toLowerCase();
-        Map<String, Double> resourceToXP = ResourceXPmanager.getFarmingxpharest();
 
+        Map<String, Double> resourceToXP = ResourceXPmanager.getFarmingxpharest();
         if(resourceToXP.containsKey(blockType)){
             player.addSkillXP(SkillType.FARMING, resourceToXP.get(blockType));
         }

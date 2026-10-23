@@ -22,18 +22,23 @@ public class BlockBrokenListener implements Listener {
         UUID uuid = event.getPlayer().getUniqueId();
         PlayerWithSkills player = PlayerManager.getPlayer(uuid);
 
+        //checks all the skills if the block of the event is in the xp File
+
+        //MINING
         Map<String, Double> resourceToXP = ResourceXPmanager.getMiningxp();
 
         if(resourceToXP.containsKey(blockType)){
             player.addSkillXP(SkillType.MINING, resourceToXP.get(blockType));
         }
 
+        //FARMING
         resourceToXP = ResourceXPmanager.getFarmingxpbreak();
 
         if(resourceToXP.containsKey(blockType)){
             player.addSkillXP(SkillType.FARMING, resourceToXP.get(blockType));
         }
 
+        //FORAGING
         resourceToXP = ResourceXPmanager.getForagingxp();
 
         if(resourceToXP.containsKey(blockType)){

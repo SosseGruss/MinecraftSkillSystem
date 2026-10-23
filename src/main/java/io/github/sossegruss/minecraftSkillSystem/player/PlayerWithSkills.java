@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import io.github.sossegruss.minecraftSkillSystem.MinecraftSkillSystem;
 import io.github.sossegruss.minecraftSkillSystem.skill.SkillType;
+import org.bukkit.entity.Player;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -20,9 +21,9 @@ import java.util.UUID;
  * @author phack
  * @version 16.06.2026
  */
-public class PlayerWithSkills {
+public class PlayerWithSkills implements Player {
     private final UUID uuid;
-    private final Map<SkillType, Double> skills = new HashMap<>(); //HashMap in order to save the players Skill XP while the server is running
+    private final Map<SkillType, Double> skillXP = new HashMap<>(); //HashMap in order to save the players Skill XP while the server is running
     private final Map<SkillType, Integer> skillLevel = new HashMap<>();
     private static final long[] LEVEL_THRASHHOLD = {0, 500, 1200, 2180, 3550, 5470, 8160, 11920, 17190, 24560,
                                                     34880, 49330, 69560, 97880, 137530, 193040, 270750, 379550, 531870, 745120, 1050000, 1500000, 2100000, 3000000,
@@ -44,21 +45,29 @@ public class PlayerWithSkills {
      * @param addXP     the amont of XP added to the total
      * @param skillType wich skills XP gets increased
      */
-    public void addSkillXP(SkillType skillType, double addXP) {
-        double currentXP = this.skills.get(skillType) + addXP;
-        int level = 1;
+    public void addSkillXP(SkillType skillType, double addXP) { //Muss unbedingt gefixed werden levelt nicht richtig, so würde es bei jedem afruf level hinzufügen auch wenn nich nötig.
+        this.skillXP.compute(skillType, (k, currentXP) -> currentXP + addXP);
 
-        for(int i = 1; i < LEVEL_THRASHHOLD.length; i++){
-            if(currentXP >= LEVEL_THRASHHOLD[i]){
-                level = i + 1;
-            }
-            else{
-                break;
-            }
+        boolean levelup;
+        do{
+            levelup = lvlUp(skillType);
+        }while(levelup);
+    }
+
+    public boolean lvlUp(SkillType skillType){
+        double xp = skillXP.get(skillType);
+        int currentLvl = skillLevel.get(skillType);
+        if(xp >= LEVEL_THRASHHOLD[currentLvl]+1){
+            skillXP.replace(skillType, (xp-LEVEL_THRASHHOLD[currentLvl+1]));
+            skillLevel.replace(skillType, currentLvl+1);
+            return true; // Für kann man diese fnktion rekursiv aufrufen damit es öffter checked nd wennn es nicht mehr geht höhrt sie auf
         }
-        skillLevel.put(skillType, level);
+        return false;
+    }
 
-
+    public long getNextLvlReq(SkillType skillType){
+        int currentLvl = this.skillLevel.get(skillType);
+        return this.LEVEL_THRASHHOLD[currentLvl+1];
     }
 
     /**
@@ -68,9 +77,13 @@ public class PlayerWithSkills {
      * @return return the amount of XP for a certain skill
      */
     public double getXPfromSkill(SkillType skillType) {
-        if (this.skills.get(skillType) == null) return 0.0;
+        if (this.skillXP.get(skillType) == null) return 0.0;
+        return this.skillXP.get(skillType);
+    }
 
-        return this.skills.get(skillType);
+    public int getSkillLevel(SkillType skillType) {
+        if (this.skillLevel.get(skillType) == null) return 0;
+        return this.skillLevel.get(skillType);
     }
 
     public UUID getUuid() {
@@ -80,7 +93,7 @@ public class PlayerWithSkills {
     public void writeXPToFile() {
         try {
             Path file = xpFolder.resolve(uuid + ".json");
-            Files.writeString(file, gson.toJson(skills));
+            Files.writeString(file, gson.toJson(skillXP));
         } catch (IOException e) {
             MinecraftSkillSystem.getInstanz().getSLF4JLogger().error("could not write to file");
         }
@@ -109,7 +122,7 @@ public class PlayerWithSkills {
             Map<SkillType, Double> readMap = new HashMap<>();
             readMap = gson.fromJson(json, type);
 
-            skills.putAll(readMap);
+            skillXP.putAll(readMap);
 
         } catch (IOException e) {
             e.printStackTrace();
