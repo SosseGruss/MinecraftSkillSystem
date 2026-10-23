@@ -20,6 +20,7 @@ public final class MinecraftSkillSystem extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new CropHarvestListener(), this);
         getServer().getPluginManager().registerEvents(new FishedListener(), this);
         getServer().getPluginManager().registerEvents(new MobKilledListener(), this);
+        getServer().getPluginManager().registerEvents(new InventoryClickListener(), this);
         registerCommand("levelinfo", new OpenXpInfoInv());
     }
 

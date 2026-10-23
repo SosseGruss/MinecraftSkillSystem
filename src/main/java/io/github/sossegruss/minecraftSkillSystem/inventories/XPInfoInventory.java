@@ -30,11 +30,11 @@ public class XPInfoInventory implements InventoryHolder {
         inv = Bukkit.createInventory(this, 36, Component.text("Skill Level"));
 
         inv.setItem(4, newInfoItem("Level"));
-        inv.setItem(11, miningItem);
-        inv.setItem(12, farmingItem);
-        inv.setItem(13, combatItem);
-        inv.setItem(14, fishingItem);
-        inv.setItem(15, foragingItem);
+        inv.setItem(20, miningItem);
+        inv.setItem(21, farmingItem);
+        inv.setItem(22, combatItem);
+        inv.setItem(23, fishingItem);
+        inv.setItem(24, foragingItem);
     }
     public ItemStack newInfoItem(String titel){
         ItemStack infoItem = new ItemStack(Material.PAPER);
