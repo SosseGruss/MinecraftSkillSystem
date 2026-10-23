@@ -15,8 +15,6 @@ import java.util.UUID;
 
 public class OpenXpInfoInv implements BasicCommand {
 
-    private Map<Player, XPInfoInventory> data = new HashMap<>();
-
     @Override
     public void execute(CommandSourceStack source, String[] args) {
         CommandSender sender = source.getSender();
@@ -26,7 +24,8 @@ public class OpenXpInfoInv implements BasicCommand {
             Player player = ((Player) entity).getPlayer();
             UUID uuid = player.getUniqueId();
             PlayerWithSkills playerWithSkills = PlayerManager.getPlayer(uuid);
-            XPInfoInventory inv = data.computeIfAbsent(player, p -> new XPInfoInventory(playerWithSkills));
+
+            XPInfoInventory inv = new XPInfoInventory(playerWithSkills);
             player.openInventory(inv.getInventory());
         }
         else {

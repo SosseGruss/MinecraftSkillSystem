@@ -8,10 +8,12 @@ import org.bukkit.plugin.java.JavaPlugin;
 public final class MinecraftSkillSystem extends JavaPlugin {
 
     private static MinecraftSkillSystem instanz;
+    private static PlayerManager playerManager;
 
     @Override
     public void onEnable() {
         instanz = this;
+        playerManager = new PlayerManager(getDataFolder().toPath());
         getServer().getPluginManager().registerEvents(new LoginListener(), this);
         getServer().getPluginManager().registerEvents(new LogoutListener(), this);
         getServer().getPluginManager().registerEvents(new BlockBrokenListener(), this);
@@ -29,4 +31,5 @@ public final class MinecraftSkillSystem extends JavaPlugin {
     public static MinecraftSkillSystem getInstanz() {
         return instanz;
     }
+    public static PlayerManager getPlayerManager(){return playerManager;}
 }

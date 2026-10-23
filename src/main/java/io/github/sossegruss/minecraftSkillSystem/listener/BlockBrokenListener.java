@@ -28,21 +28,21 @@ public class BlockBrokenListener implements Listener {
         Map<String, Double> resourceToXP = ResourceXPmanager.getMiningxp();
 
         if(resourceToXP.containsKey(blockType)){
-            player.addSkillXP(SkillType.MINING, resourceToXP.get(blockType));
+            player.addSkillXP(SkillType.MINING,Math.round(resourceToXP.get(blockType)*100.0)/100.0);
         }
 
         //FARMING
         resourceToXP = ResourceXPmanager.getFarmingxpbreak();
 
         if(resourceToXP.containsKey(blockType)){
-            player.addSkillXP(SkillType.FARMING, resourceToXP.get(blockType));
+            player.addSkillXP(SkillType.FARMING, Math.round(resourceToXP.get(blockType)*100.0)/100.0);
         }
 
         //FORAGING
         resourceToXP = ResourceXPmanager.getForagingxp();
 
         if(resourceToXP.containsKey(blockType)){
-            player.addSkillXP(SkillType.FORAGING, resourceToXP.get(blockType));
+            player.addSkillXP(SkillType.FORAGING, Math.round(resourceToXP.get(blockType)*100.0)/100.0);
         }
     }
 }

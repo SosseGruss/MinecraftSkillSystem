@@ -3,25 +3,34 @@ package io.github.sossegruss.minecraftSkillSystem.player;
 import io.github.sossegruss.minecraftSkillSystem.MinecraftSkillSystem;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
 public class PlayerManager {
     private final static Map<UUID, PlayerWithSkills> PLAYERS = new HashMap<>();
+    private final Path dataFolder;
+
+    public PlayerManager(Path dataFolder){
+        this.dataFolder = dataFolder;
+    }
 
     public static PlayerWithSkills getPlayer(UUID uuid){
         return PLAYERS.get(uuid);
     }
 
-    public static void loadPlayer(UUID uuid){
+
+
+    public void loadPlayer(UUID uuid){
         if(PLAYERS.containsKey(uuid)){
             throw new IllegalArgumentException("Player already loaded");
         }
 
-        PlayerWithSkills player = new PlayerWithSkills(uuid);
-        loadSkillsFromFile(uuid);
+        PlayerWithSkills player = new PlayerWithSkills(uuid, this.dataFolder);
         PLAYERS.put(uuid, player);
+        loadSkillsFromFile(uuid);
+
     }
 
     public static void unloadPlayer(UUID uuid){

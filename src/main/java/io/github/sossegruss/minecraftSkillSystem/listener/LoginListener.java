@@ -1,6 +1,7 @@
 package io.github.sossegruss.minecraftSkillSystem.listener;
 
 
+import io.github.sossegruss.minecraftSkillSystem.MinecraftSkillSystem;
 import io.github.sossegruss.minecraftSkillSystem.player.PlayerManager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -14,6 +15,6 @@ public class LoginListener implements Listener {
     public void onLogin(PlayerJoinEvent event){
         UUID uuid = event.getPlayer().getUniqueId();
 
-        PlayerManager.loadPlayer(uuid);
+        MinecraftSkillSystem.getPlayerManager().loadPlayer(uuid);
     }
 }

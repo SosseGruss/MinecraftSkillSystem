@@ -29,14 +29,27 @@ public class PlayerWithSkills {
                                                     34880, 49330, 69560, 97880, 137530, 193040, 270750, 379550, 531870, 745120, 1050000, 1500000, 2100000, 3000000,
                                                     Long.MAX_VALUE};
 
-    private final Path xpFolder = Path.of("src/main/resources/playerdata/XP");
-    private final Path lvlFolder = Path.of("src/main/resources/playerdata/LVL");
+    private final Path xpFolder;
+    private final Path lvlFolder;
 
     private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
 
-    public PlayerWithSkills(UUID uuid) {
+    public PlayerWithSkills(UUID uuid, Path dataFolder) {
         this.uuid = uuid;
+        this.xpFolder = dataFolder.resolve("playerdata").resolve("XP");
+        this.lvlFolder = dataFolder.resolve("playerdata").resolve("LVL");
+        skillXP.put(SkillType.MINING, 0.0);
+        skillXP.put(SkillType.FARMING, 0.0);
+        skillXP.put(SkillType.COMBAT, 0.0);
+        skillXP.put(SkillType.FISHING, 0.0);
+        skillXP.put(SkillType.FORAGING, 0.0);
+
+        skillLevel.put(SkillType.MINING, 1);
+        skillLevel.put(SkillType.FARMING, 1);
+        skillLevel.put(SkillType.COMBAT, 1);
+        skillLevel.put(SkillType.FISHING, 1);
+        skillLevel.put(SkillType.FORAGING, 1);
     }
 
     /**
@@ -57,8 +70,8 @@ public class PlayerWithSkills {
     public boolean lvlUp(SkillType skillType){
         double xp = skillXP.get(skillType);
         int currentLvl = skillLevel.get(skillType);
-        if(xp >= LEVEL_THRASHHOLD[currentLvl]+1){
-            skillXP.replace(skillType, (xp-LEVEL_THRASHHOLD[currentLvl+1]));
+        if(xp >= LEVEL_THRASHHOLD[currentLvl]){
+            skillXP.replace(skillType, (xp-LEVEL_THRASHHOLD[currentLvl]));
             skillLevel.replace(skillType, currentLvl+1);
             return true; // Für kann man diese fnktion rekursiv aufrufen damit es öffter checked nd wennn es nicht mehr geht höhrt sie auf
         }
@@ -67,7 +80,7 @@ public class PlayerWithSkills {
 
     public long getNextLvlReq(SkillType skillType){
         int currentLvl = this.skillLevel.get(skillType);
-        return this.LEVEL_THRASHHOLD[currentLvl+1];
+        return this.LEVEL_THRASHHOLD[currentLvl];
     }
 
     /**
@@ -113,11 +126,17 @@ public class PlayerWithSkills {
     public void loadXPFromFile() throws IOException {
         Path file = xpFolder.resolve(uuid + ".json");
 
+
+
         try {
+            if(!Files.exists(file)){
+                Files.createDirectories(xpFolder);
+                Files.writeString(file, gson.toJson(skillXP));
+                return;
+            }
             String json = Files.readString(file);
 
-            Type type = new TypeToken<HashMap<SkillType, Integer>>() {
-            }.getType();
+            Type type = new TypeToken<HashMap<SkillType, Double>>() {}.getType();
 
             Map<SkillType, Double> readMap = new HashMap<>();
             readMap = gson.fromJson(json, type);
@@ -133,10 +152,14 @@ public class PlayerWithSkills {
         Path file = lvlFolder.resolve(uuid + ".json");
 
         try {
+            if(!Files.exists(file)){
+                Files.createDirectories(lvlFolder);
+                Files.writeString(file, gson.toJson(skillLevel));
+                return;
+            }
             String json = Files.readString(file);
 
-            Type type = new TypeToken<HashMap<SkillType, Integer>>() {
-            }.getType();
+            Type type = new TypeToken<HashMap<SkillType, Integer>>() {}.getType();
 
             Map<SkillType, Integer> readMap = new HashMap<>();
             readMap = gson.fromJson(json, type);
