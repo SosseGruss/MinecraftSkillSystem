@@ -41,6 +41,7 @@ public class PlayerManager {
         try{
             PLAYERS.get(uuid).writeXPToFile();
             PLAYERS.get(uuid).writeLvlToFile();
+            PLAYERS.get(uuid).writeVeinChanceToFile();
         } catch (Exception e){
             MinecraftSkillSystem.getInstanz().getSLF4JLogger().error("could not save player to the file.", e);
         }
@@ -54,6 +55,7 @@ public class PlayerManager {
         try{
             player.loadXPFromFile();
             player.loadLvlFromFile();
+            player.loadVeinChanceFromFile();
         }catch (IOException e){
             MinecraftSkillSystem.getInstanz().getSLF4JLogger().error("could not load player from the file.", e);
         }

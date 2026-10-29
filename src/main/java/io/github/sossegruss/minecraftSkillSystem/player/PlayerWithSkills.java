@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import io.github.sossegruss.minecraftSkillSystem.MinecraftSkillSystem;
 import io.github.sossegruss.minecraftSkillSystem.skill.SkillType;
+import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 
 import java.io.IOException;
@@ -26,11 +27,16 @@ public class PlayerWithSkills {
     private final Map<SkillType, Double> skillXP = new HashMap<>(); //HashMap in order to save the players Skill XP while the server is running
     private final Map<SkillType, Integer> skillLevel = new HashMap<>();
     private static final long[] LEVEL_THRASHHOLD = {0, 500, 1200, 2180, 3550, 5470, 8160, 11920, 17190, 24560,
-                                                    34880, 49330, 69560, 97880, 137530, 193040, 270750, 379550, 531870, 745120, 1050000, 1500000, 2100000, 3000000,
+                                                    34880, 49330, 69560, 97880, 137530, 193040, 270750, 379550,
+                                                    531870, 745120, 1050000, 1500000, 2100000, 3000000, 4260000,
+                                                    6024000, 8494000, 11951000, 16791000, 23568000, 33055000,
+                                                    46337000, 64932000, 90965000,
                                                     Long.MAX_VALUE};
+    private double veinMiningChance = 0;
 
     private final Path xpFolder;
     private final Path lvlFolder;
+    private final Path vcFolder;
 
     private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
@@ -39,6 +45,8 @@ public class PlayerWithSkills {
         this.uuid = uuid;
         this.xpFolder = dataFolder.resolve("playerdata").resolve("XP");
         this.lvlFolder = dataFolder.resolve("playerdata").resolve("LVL");
+        this.vcFolder = dataFolder.resolve("playerdata").resolve("VeinChance");
+
         skillXP.put(SkillType.MINING, 0.0);
         skillXP.put(SkillType.FARMING, 0.0);
         skillXP.put(SkillType.COMBAT, 0.0);
@@ -58,22 +66,29 @@ public class PlayerWithSkills {
      * @param addXP     the amont of XP added to the total
      * @param skillType wich skills XP gets increased
      */
-    public void addSkillXP(SkillType skillType, double addXP) { //Muss unbedingt gefixed werden levelt nicht richtig, so würde es bei jedem afruf level hinzufügen auch wenn nich nötig.
+    public void addSkillXP(SkillType skillType, double addXP) {
         this.skillXP.compute(skillType, (k, currentXP) -> currentXP + addXP);
+        Player player = (Player) this;
+        player.sendActionBar(Component.text("+"+addXP+"" + skillType.name()));
 
         boolean levelup;
         do{
             levelup = lvlUp(skillType);
+            if(levelup && skillType == SkillType.MINING){
+                veinMiningChance += 0.25;
+            }
         }while(levelup);
     }
 
     public boolean lvlUp(SkillType skillType){
+        Player player = (Player) this;
         double xp = skillXP.get(skillType);
         int currentLvl = skillLevel.get(skillType);
         if(xp >= LEVEL_THRASHHOLD[currentLvl]){
             skillXP.replace(skillType, (xp-LEVEL_THRASHHOLD[currentLvl]));
             skillLevel.replace(skillType, currentLvl+1);
-            return true; // Für kann man diese fnktion rekursiv aufrufen damit es öffter checked nd wennn es nicht mehr geht höhrt sie auf
+            player.sendMessage("§1 Level "+currentLvl+1 + " §6" + skillType.name());
+            return true;
         }
         return false;
     }
@@ -99,6 +114,10 @@ public class PlayerWithSkills {
         return this.skillLevel.get(skillType);
     }
 
+    public double getVeinMiningChance() {
+        return veinMiningChance;
+    }
+
     public UUID getUuid() {
         return uuid;
     }
@@ -118,6 +137,15 @@ public class PlayerWithSkills {
         try {
             Path file = lvlFolder.resolve(uuid + ".json");
             Files.writeString(file, gson.toJson(skillLevel));
+        } catch (IOException e) {
+            MinecraftSkillSystem.getInstanz().getSLF4JLogger().error("could not write to file");
+        }
+    }
+
+    public void writeVeinChanceToFile(){
+        try {
+            Path file = vcFolder.resolve(uuid + ".json");
+            Files.writeString(file, String.valueOf(veinMiningChance));
         } catch (IOException e) {
             MinecraftSkillSystem.getInstanz().getSLF4JLogger().error("could not write to file");
         }
@@ -171,4 +199,21 @@ public class PlayerWithSkills {
         }
     }
 
+    public void loadVeinChanceFromFile() throws IOException {
+        Path file = vcFolder.resolve(uuid + ".json");
+
+        try {
+            if(!Files.exists(file)){
+                Files.createDirectories(vcFolder);
+                Files.writeString(file, String.valueOf(veinMiningChance));
+                return;
+            }
+            String json = Files.readString(file);
+
+            veinMiningChance = Integer.parseInt(json);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
