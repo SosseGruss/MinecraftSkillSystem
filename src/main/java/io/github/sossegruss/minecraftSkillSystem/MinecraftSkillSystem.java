@@ -1,6 +1,8 @@
 package io.github.sossegruss.minecraftSkillSystem;
 
+import io.github.sossegruss.minecraftSkillSystem.Commands.GiveXP;
 import io.github.sossegruss.minecraftSkillSystem.Commands.OpenXpInfoInv;
+import io.github.sossegruss.minecraftSkillSystem.Commands.SetLevel;
 import io.github.sossegruss.minecraftSkillSystem.listener.*;
 import io.github.sossegruss.minecraftSkillSystem.player.PlayerManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -21,7 +23,10 @@ public final class MinecraftSkillSystem extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new FishedListener(), this);
         getServer().getPluginManager().registerEvents(new MobKilledListener(), this);
         getServer().getPluginManager().registerEvents(new InventoryClickListener(), this);
+        getServer().getPluginManager().registerEvents(new VeinMinerListener(), this);
         registerCommand("levelinfo", new OpenXpInfoInv());
+        registerCommand("giveXP", new GiveXP());
+        registerCommand("setLevel", new SetLevel());
     }
 
     @Override

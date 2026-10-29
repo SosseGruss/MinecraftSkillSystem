@@ -89,7 +89,7 @@ public class XPInfoInventory implements InventoryHolder {
         }
 
         List<String> lore = new ArrayList<>();
-        lore.add("§7XP: §a" + xp + " §7/ §a" + needed);
+        lore.add("§7XP: §a" + (Math.floor(xp*10))/10 + " §7/ §a" + (Math.floor(needed*10))/10);
         meta.setLore(lore);
 
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);

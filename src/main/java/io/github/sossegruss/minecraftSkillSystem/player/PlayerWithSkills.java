@@ -6,6 +6,7 @@ import com.google.gson.reflect.TypeToken;
 import io.github.sossegruss.minecraftSkillSystem.MinecraftSkillSystem;
 import io.github.sossegruss.minecraftSkillSystem.skill.SkillType;
 import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.io.IOException;
@@ -30,7 +31,6 @@ public class PlayerWithSkills {
                                                     34880, 49330, 69560, 97880, 137530, 193040, 270750, 379550,
                                                     531870, 745120, 1050000, 1500000, 2100000, 3000000, 4260000,
                                                     6024000, 8494000, 11951000, 16791000, 23568000, 33055000,
-                                                    46337000, 64932000, 90965000,
                                                     Long.MAX_VALUE};
     private double veinMiningChance = 0;
 
@@ -68,29 +68,39 @@ public class PlayerWithSkills {
      */
     public void addSkillXP(SkillType skillType, double addXP) {
         this.skillXP.compute(skillType, (k, currentXP) -> currentXP + addXP);
-        Player player = (Player) this;
-        player.sendActionBar(Component.text("+"+addXP+"" + skillType.name()));
+        Player player = getBukkingPlayer();
+        if(player != null) {
+            player.sendActionBar(Component.text("+"+addXP+" " + skillType.name()));
+        }
 
         boolean levelup;
         do{
             levelup = lvlUp(skillType);
-            if(levelup && skillType == SkillType.MINING){
-                veinMiningChance += 0.25;
-            }
         }while(levelup);
     }
 
     public boolean lvlUp(SkillType skillType){
-        Player player = (Player) this;
+        Player player = getBukkingPlayer();
         double xp = skillXP.get(skillType);
         int currentLvl = skillLevel.get(skillType);
+        int newLvl = currentLvl + 1;
+
         if(xp >= LEVEL_THRASHHOLD[currentLvl]){
             skillXP.replace(skillType, (xp-LEVEL_THRASHHOLD[currentLvl]));
-            skillLevel.replace(skillType, currentLvl+1);
-            player.sendMessage("§1 Level "+currentLvl+1 + " §6" + skillType.name());
+            skillLevel.replace(skillType, newLvl);
+            if(player != null) {
+                player.sendMessage("§1 Level " + (newLvl) + " §6" + skillType.name());
+            }
+            if(skillType == SkillType.MINING) {
+                veinMiningChance += 0.3;
+            }
             return true;
         }
         return false;
+    }
+
+    private Player getBukkingPlayer() {
+        return Bukkit.getPlayer(uuid);
     }
 
     public long getNextLvlReq(SkillType skillType){
@@ -120,6 +130,15 @@ public class PlayerWithSkills {
 
     public UUID getUuid() {
         return uuid;
+    }
+
+    public void setSkillLevel(SkillType skillType, int newlevel){
+        this.skillLevel.compute(skillType, (k, currentLvl) -> newlevel);
+        this.skillXP.compute(skillType, (k, currentXP) -> 0.0);
+
+        if(skillType == SkillType.MINING) {
+            veinMiningChance = 0.3 * newlevel;
+        }
     }
 
     public void writeXPToFile() {
@@ -210,7 +229,7 @@ public class PlayerWithSkills {
             }
             String json = Files.readString(file);
 
-            veinMiningChance = Integer.parseInt(json);
+            veinMiningChance = Double.parseDouble(json);
 
         } catch (IOException e) {
             e.printStackTrace();
