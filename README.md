@@ -29,7 +29,7 @@ A Minecraft Plugin for the 26.1.2, which tracks Xp and level for the Skills Mini
     Example:<br>
     `/maxblockvein 5`
 ## Installation (fresh server)
-1. Download Paper 26.1.2 and put the JAR into a new empty folder
+1. Download [Paper 26.1.2](https://fill-ui.papermc.io/projects/paper/version/26.1.2) and put the JAR into a new empty folder
 2. Create a file start.bat in the same folder(it's important that it has the endin .bat). <br>
    in there you put the text:
      `java -Xms2G -Xmx2G -jar paper-26.1.2.jar --nogui`
