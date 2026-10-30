@@ -1,6 +1,6 @@
 # MinecraftSkillSystem
 
-A Minecraft Plugin which tracks Xp and level for the Skills Mining, Farming, Combat, Fishing and Foraging.
+A Minecraft Plugin for the 26.1.2, which tracks Xp and level for the Skills Mining, Farming, Combat, Fishing and Foraging.
 
 ## Features
 - XP are granted for specific blocks brocken, Mobs killed and items fished.
