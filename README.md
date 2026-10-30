@@ -5,14 +5,26 @@ A Minecraft Plugin which tracks Xp and level for the Skills Mining, Farming, Com
 ## Features
 - XP are granted for specific blocks brocken, Mobs killed and items fished.
 - ### Commands
-  - `/levelinfo`
+  - `/levelinfo`<br>
     this command opens an inventory where you can see your level and xp.
     
-  - `/giveXP` this command gives you XP for a serten Skill.
-    Syntax:
-    `/giveXP <Skill in all Caps> <xp amount>`
-    Example:
-    `/giveXP MINING 10`
+  - `/giveXP`<br>
+    this command gives you XP for a serten Skill.<br><br>
+    Syntax:<br>
+    `/giveXP <Skill in all Caps> <xp amount>`<br><br>
+    Example:<br>
+    `/giveXP MINING 10`<br><br>
     
-  - `/setLevel` this command sets your level for a serten skill to the given amount, the syntax looks like this: /setLevel <Skill in all Caps> <the level>  for example: /setLevel MINING 10
-  - `/maxblockvein` this command les you controle how many blocks you want to maximum mine at once. the synax looks like this: /maxblockvein <nmber of blocks 1-9>  for example: /maxblockvein 5
+  - `/setLevel` <br>
+  this command sets your level for a serten skill to the given amount.<br><br>
+  Syntax <br>
+  `/setLevel <Skill in all Caps> <the level>` <br><br>
+  Example:<br>
+  `/setLevel MINING 10`<br><br>
+  
+  - `/maxblockvein`
+    this command lets you controle how many blocks you want to maximum mine at once.<br><br>
+    Syntax:<br>
+    `/maxblockvein <nmber of blocks 1-9>`<br><br>
+    Example:<br>
+    `/maxblockvein 5`
