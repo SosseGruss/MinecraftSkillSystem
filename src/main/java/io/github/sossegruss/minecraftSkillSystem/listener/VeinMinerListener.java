@@ -1,6 +1,7 @@
 package io.github.sossegruss.minecraftSkillSystem.listener;
 
 import io.github.sossegruss.minecraftSkillSystem.player.PlayerManager;
+import io.github.sossegruss.minecraftSkillSystem.player.PlayerWithSkills;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
@@ -21,19 +22,19 @@ public class VeinMinerListener implements Listener{
     @EventHandler
     public void onVeinMinerEvent(BlockBreakEvent event){
         Player player = event.getPlayer();
+        PlayerWithSkills playerWithSkills = PlayerManager.getPlayer(player.getUniqueId());
         double veinMineChance;
 
         if(activePlayers.contains(player.getUniqueId())) return;
 
-        veinMineChance = PlayerManager.getPlayer(player.getUniqueId()).getVeinMiningChance();
+        veinMineChance = playerWithSkills.getVeinMiningChance();
         int blocksToMineCount =(int) Math.floor(veinMineChance);
         double chance = veinMineChance - blocksToMineCount;
-        Random random = new Random();
         if (ThreadLocalRandom.current().nextDouble() < chance) {
             blocksToMineCount++;
         }
-        if(blocksToMineCount > PlayerManager.getPlayer(player.getUniqueId()).getVeinMiningBlockCap()){
-            blocksToMineCount = PlayerManager.getPlayer(player.getUniqueId()).getVeinMiningBlockCap();
+        if(blocksToMineCount > playerWithSkills.getVeinMiningBlockCap()){
+            blocksToMineCount = playerWithSkills.getVeinMiningBlockCap();
         }
         BlockFace facing = player.getFacing();
         float pitch = player.getPitch();
@@ -55,6 +56,7 @@ public class VeinMinerListener implements Listener{
 
     private Set<Block> collectVein(Block start, int maxBlocks, BlockFace facing, float pitch){
         Set<Block> toMine = new HashSet<>();
+        toMine.add(start);
         if(pitch > -45 && pitch < 45){
             if (facing == BlockFace.NORTH || facing == BlockFace.SOUTH) {
 
@@ -62,10 +64,10 @@ public class VeinMinerListener implements Listener{
                     for (int x = -1; x <= 1; x++) {
                         Block nextBlock = start.getRelative(x, y, 0);
                         if (!toMine.contains(nextBlock)) {
-                            toMine.add(nextBlock);
                             if (toMine.size() >= maxBlocks) {
                                 return toMine;
                             }
+                            toMine.add(nextBlock);
                         }
                     }
                 }
@@ -75,10 +77,10 @@ public class VeinMinerListener implements Listener{
                     for (int z = -1; z <= 1; z++) {
                         Block nextBlock = start.getRelative(0, y, z);
                         if (!toMine.contains(nextBlock)) {
-                            toMine.add(nextBlock);
                             if (toMine.size() >= maxBlocks) {
                                 return toMine;
                             }
+                            toMine.add(nextBlock);
                         }
                     }
                 }
@@ -90,16 +92,15 @@ public class VeinMinerListener implements Listener{
                 for(int z = -1; z <= 1; z++){
                     Block nextBlock = start.getRelative(x, 0, z);
                     if(!toMine.contains(nextBlock)) {
-                        toMine.add(nextBlock);
-                        if(toMine.size() >= maxBlocks) {
+                        if (toMine.size() >= maxBlocks) {
                             return toMine;
                         }
+                        toMine.add(nextBlock);
                     }
                 }
             }
 
         }
-        toMine.add(start);
         return toMine;
     }
 }
