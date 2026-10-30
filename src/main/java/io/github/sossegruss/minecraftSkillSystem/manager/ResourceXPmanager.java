@@ -7,6 +7,7 @@ import io.github.sossegruss.minecraftSkillSystem.MinecraftSkillSystem;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -43,11 +44,23 @@ public class ResourceXPmanager {
 
     private static Map<String, Double> loadMapfromJson(String path){
 
-        try {
-            String json = Files.readString(Path.of(path));
+        try (InputStream input = ResourceXPmanager.class.getClassLoader().getResourceAsStream(path)) {
+            if (input == null) {
+                MinecraftSkillSystem.getInstanz().getSLF4JLogger().warn("Datei " + path + " nicht im Jar gefunden");
+                return new HashMap<>();
+            }
+
+            String json = new String(input.readAllBytes(), StandardCharsets.UTF_8);
             Type mapType = new TypeToken<Map<String, Double>>(){}.getType();
-            return new Gson().fromJson(json, mapType);
+            Map<String, Double> loaded = new Gson().fromJson(json, mapType);
+
+            if(loaded != null) return loaded;
+            else {
+                MinecraftSkillSystem.getInstanz().getSLF4JLogger().warn("Datei " + path + " konnte nicht geladen werden");
+                return new HashMap<>();
+            }
         } catch (IOException e) {
+            MinecraftSkillSystem.getInstanz().getSLF4JLogger().warn("Konnte " + path + " nicht lesen: " + e.getMessage());
             return new HashMap<>();
         }
 
