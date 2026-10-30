@@ -89,7 +89,13 @@ public class XPInfoInventory implements InventoryHolder {
         }
 
         List<String> lore = new ArrayList<>();
-        lore.add("§7XP: §a" + (Math.floor(xp*10))/10 + " §7/ §a" + (Math.floor(needed*10))/10);
+        if(skillType == SkillType.MINING){
+            lore.add("§7XP: §a" + (Math.floor(xp*10))/10 + " §7/ §a" + (Math.floor(needed*10))/10 + "\n§7"+player.getVeinMiningChance() + " VC -> "+ (player.getVeinMiningChance() + 0.3));
+        }
+        else {
+            lore.add("§7XP: §a" + (Math.floor(xp*10))/10 + " §7/ §a" + (Math.floor(needed*10))/10);
+        }
+
         meta.setLore(lore);
 
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);

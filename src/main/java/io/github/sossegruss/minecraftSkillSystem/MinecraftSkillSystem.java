@@ -3,6 +3,7 @@ package io.github.sossegruss.minecraftSkillSystem;
 import io.github.sossegruss.minecraftSkillSystem.Commands.GiveXP;
 import io.github.sossegruss.minecraftSkillSystem.Commands.OpenXpInfoInv;
 import io.github.sossegruss.minecraftSkillSystem.Commands.SetLevel;
+import io.github.sossegruss.minecraftSkillSystem.Commands.SetVeinMiningBlockCap;
 import io.github.sossegruss.minecraftSkillSystem.listener.*;
 import io.github.sossegruss.minecraftSkillSystem.player.PlayerManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -27,6 +28,7 @@ public final class MinecraftSkillSystem extends JavaPlugin {
         registerCommand("levelinfo", new OpenXpInfoInv());
         registerCommand("giveXP", new GiveXP());
         registerCommand("setLevel", new SetLevel());
+        registerCommand("maxblockvein", new SetVeinMiningBlockCap());
     }
 
     @Override

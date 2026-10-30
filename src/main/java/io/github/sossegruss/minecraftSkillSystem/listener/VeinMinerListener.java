@@ -1,7 +1,6 @@
 package io.github.sossegruss.minecraftSkillSystem.listener;
 
 import io.github.sossegruss.minecraftSkillSystem.player.PlayerManager;
-import io.github.sossegruss.minecraftSkillSystem.player.PlayerWithSkills;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
@@ -9,7 +8,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 
-import java.net.SocketOption;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
@@ -34,6 +32,9 @@ public class VeinMinerListener implements Listener{
         if (ThreadLocalRandom.current().nextDouble() < chance) {
             blocksToMineCount++;
         }
+        if(blocksToMineCount > PlayerManager.getPlayer(player.getUniqueId()).getVeinMiningBlockCap()){
+            blocksToMineCount = PlayerManager.getPlayer(player.getUniqueId()).getVeinMiningBlockCap();
+        }
         BlockFace facing = player.getFacing();
         float pitch = player.getPitch();
         Set<Block> blocksToMine = collectVein(event.getBlock(), blocksToMineCount, facing, pitch);
@@ -56,7 +57,7 @@ public class VeinMinerListener implements Listener{
         Set<Block> toMine = new HashSet<>();
         if(pitch > -45 && pitch < 45){
             if (facing == BlockFace.NORTH || facing == BlockFace.SOUTH) {
-                System.out.println("Facing north or west");
+
                 for (int y = -1; y <= 1; y++) {
                     for (int x = -1; x <= 1; x++) {
                         Block nextBlock = start.getRelative(x, y, 0);
@@ -69,7 +70,7 @@ public class VeinMinerListener implements Listener{
                     }
                 }
             } else if (facing == BlockFace.EAST || facing == BlockFace.WEST) {
-                System.out.println("Facing West or East");
+
                 for (int y = -1; y <= 1; y++) {
                     for (int z = -1; z <= 1; z++) {
                         Block nextBlock = start.getRelative(0, y, z);
@@ -84,7 +85,7 @@ public class VeinMinerListener implements Listener{
             }
         }
         if ((pitch < -45 || pitch > 45)) {
-            System.out.println("Facing up or down");
+
             for(int x = -1; x <= 1; x++){
                 for(int z = -1; z <= 1; z++){
                     Block nextBlock = start.getRelative(x, 0, z);

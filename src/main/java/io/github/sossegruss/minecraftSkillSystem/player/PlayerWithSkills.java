@@ -33,6 +33,7 @@ public class PlayerWithSkills {
                                                     6024000, 8494000, 11951000, 16791000, 23568000, 33055000,
                                                     Long.MAX_VALUE};
     private double veinMiningChance = 0;
+    private int veinMiningBlockCap = 9;
 
     private final Path xpFolder;
     private final Path lvlFolder;
@@ -234,5 +235,18 @@ public class PlayerWithSkills {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void setVeinMiningBlockCap(int newCap) {
+        if(newCap > 0 && newCap <= 9){
+            this.veinMiningBlockCap = newCap;
+        }
+        else {
+            MinecraftSkillSystem.getInstanz().getSLF4JLogger().error("Vein Mining Block Cap must be between 1 and 9");
+        }
+    }
+
+    public int getVeinMiningBlockCap() {
+        return veinMiningBlockCap;
     }
 }
