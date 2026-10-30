@@ -33,6 +33,7 @@ A Minecraft Plugin for the 26.1.2, which tracks Xp and level for the Skills Mini
 2. Create a file start.bat in the same folder(it's important that it has the endin .bat). <br>
    in there you put the text:
      `java -Xms2G -Xmx2G -jar paper-26.1.2.jar --nogui`
+     make sure that the `paper-26.1.2.jar` part matches the name of the file yo downloaded
 3. Run the script once. The server stops and creates `eula.txt`.
 4. Open `eula.txt` and set `eula=true`.
 5. Download `MinecraftSkillSystem.jar` from the latest GitHub release
